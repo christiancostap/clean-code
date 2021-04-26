@@ -23,10 +23,5 @@
     "jest": "^26.6.3",
     "lint-staged": "^10.5.4",
     "standard": "^16.0.3"
-  },
-  "lint-staged": {
-    "*.js": [
-      "standard --fix"
-    ]
   }
 }
