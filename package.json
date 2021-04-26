@@ -16,5 +16,15 @@
   "bugs": {
     "url": "https://github.com/christiancostap/clean-code/issues"
   },
-  "homepage": "https://github.com/christiancostap/clean-code#readme"
+  "homepage": "https://github.com/christiancostap/clean-code#readme",
+  "devDependencies": {
+    "lint-staged": "^10.5.4",
+    "standard": "^16.0.3"
+  },
+  "lint-staged": {
+    "*.js": [
+      "standard --fix",
+      "git add"
+    ]
+  }
 }
