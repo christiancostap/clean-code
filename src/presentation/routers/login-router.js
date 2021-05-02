@@ -16,7 +16,10 @@ module.exports = class LoginRouter {
     if (!email) {
       return HttpResponse.badRequest('email')
     }
-    this.authUseCase.auth(email, password)
-    return HttpResponse.unauthorized() // código conflitante, pois n faz validação, apenas retorna.
+    const accessToken = this.authUseCase.auth(email, password)
+    if (!accessToken) {
+      return HttpResponse.unauthorized()
+    }
+    return HttpResponse.ok()
   }
 }
