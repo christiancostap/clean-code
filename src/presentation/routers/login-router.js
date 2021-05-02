@@ -6,10 +6,8 @@ module.exports = class LoginRouter {
   }
 
   route (httpRequest) {
-    if (!httpRequest || !httpRequest.body) {
-      return {
-        statusCode: 500
-      }
+    if (!httpRequest || !httpRequest.body || !this.authUseCase || !this.authUseCase.auth) {
+      return HttpResponse.serverError()
     }
     const { email, password } = httpRequest.body
     if (!password) {
@@ -19,8 +17,6 @@ module.exports = class LoginRouter {
       return HttpResponse.badRequest('email')
     }
     this.authUseCase.auth(email, password)
-    return {
-      statusCode: 401
-    } // código conflitante, pois n faz validação, apenas retorna.
+    return HttpResponse.unauthorized() // código conflitante, pois n faz validação, apenas retorna.
   }
 }
