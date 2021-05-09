@@ -18,6 +18,7 @@ const makeSut = () => {
 const makeEmailValidator = () => {
   class EmailValidatorSpy {
     isValid (email) {
+      this.email = email
       return this.isEmailValid
     }
   }
@@ -121,6 +122,18 @@ describe('Login Router', () => {
     await sut.route(httpRequest)
     expect(authUseCaseSpy.email).toEqual(httpRequest.body.email)
     expect(authUseCaseSpy.password).toEqual(httpRequest.body.password)
+  })
+
+  test('Should call EmailValidator with correct email', async () => {
+    const { sut, emailValidatorSpy } = makeSut()
+    const httpRequest = {
+      body: {
+        email: 'any_email@mail.com',
+        password: 'any_password'
+      }
+    }
+    await sut.route(httpRequest)
+    expect(emailValidatorSpy.email).toEqual(httpRequest.body.email)
   })
 
   test('Should return 401 when invalid credentials are provided', async () => {
