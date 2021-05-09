@@ -26,7 +26,7 @@ module.exports = class LoginRouter {
       }
       return HttpResponse.ok(accessToken)
     } catch (error) {
-      // console.log(error)  // Somente necessário em produtivo (por exemplo enviar um email sempre que um erro de server for encontrado)
+      console.log(error) // Somente necessário em produtivo (por exemplo enviar um email sempre que um erro de server for encontrado)
       return HttpResponse.serverError()
     }
   }
