@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --watch --onlyChanged",
-    "test:staged": "jest --passWithNoTests --findRelatedTests",
+    "test:staged": "jest --passWithNoTests --findRelatedTests --silent",
     "prepare": "husky install"
   },
   "repository": {
