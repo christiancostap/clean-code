@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watch --onlyChanged --silent --verbose --colors --noStackTrace",
-    "test:staged": "jest --passWithNoTests --findRelatedTests --silent",
-    "test:ci": "jest --coverage --noStackTrace --silent",
+    "test": "jest --silent --colors --noStackTrace --passWithNoTests",
+    "test:unit": "yarn test -- --watch --onlyChanged --verbose",
+    "test:staged": "yarn test -- --findRelatedTests",
+    "test:ci": "yarn test -- --coverage",
     "prepare": "husky install"
   },
   "repository": {
