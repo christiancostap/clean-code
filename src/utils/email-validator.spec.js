@@ -10,4 +10,10 @@ describe('Email Validator', () => {
     const isEmailValid = sut.isValid('valid_email@mail.com')
     expect(isEmailValid).toBe(true)
   })
+
+  // test('Should return false if validator returns false.', async () => {
+  //   const sut = new EmailValidator() // sut (system under test)
+  //   const isEmailValid = sut.isValid('invalid_email@mail.com')
+  //   expect(isEmailValid).toBe(false)
+  // })
 })
