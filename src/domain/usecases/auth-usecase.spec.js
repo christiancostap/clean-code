@@ -68,18 +68,40 @@ const makeLoadUserByEmailRepositoryWithError = () => {
   return new LoadUserByEmailRepositorySpy()
 }
 
+const makeUpdateAccessTokenRepository = () => {
+  class UpdateAccessTokenRepositorySpy {
+    async update (userId, accessToken) {
+      this.userId = userId
+      this.accessToken = accessToken
+    }
+  }
+  return new UpdateAccessTokenRepositorySpy()
+}
+
+const makeUpdateAccessTokenRepositoryWithError = () => {
+  class UpdateAccessTokenRepositorySpy {
+    async update () {
+      throw new Error()
+    }
+  }
+  return new UpdateAccessTokenRepositorySpy()
+}
+
 const makeSut = () => {
   const encrypterSpy = makeEncrypter()
   const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
+  const updateAccessTokenRepositorySpy = makeUpdateAccessTokenRepository()
   const tokenGeneratorSpy = makeTokenGenerator()
   const sut = new AuthUseCase({
     loadUserByEmailRepository: loadUserByEmailRepositorySpy,
+    updateAccessTokenRepository: updateAccessTokenRepositorySpy,
     encrypter: encrypterSpy,
     tokenGenerator: tokenGeneratorSpy
   })
   return {
     sut,
     loadUserByEmailRepositorySpy,
+    updateAccessTokenRepositorySpy,
     encrypterSpy,
     tokenGeneratorSpy
   }
@@ -138,41 +160,52 @@ describe('Auth UseCase', () => {
     expect(accessToken).toBeTruthy()
   })
 
+  test('should call UpdateAccessTokenRepository with correct userId and Token', async () => {
+    const { sut, loadUserByEmailRepositorySpy, tokenGeneratorSpy, updateAccessTokenRepositorySpy } = makeSut()
+    await sut.auth('valid_email@mail.com', 'valid_password')
+    expect(updateAccessTokenRepositorySpy.userId).toBe(loadUserByEmailRepositorySpy.user.id)
+    expect(updateAccessTokenRepositorySpy.accessToken).toBe(tokenGeneratorSpy.accessToken)
+  })
+
   test('should throw if invalid dependencies are provided', async () => {
     const invalid = {}
     const loadUserByEmailRepository = makeLoadUserByEmailRepository()
     const encrypter = makeEncrypter()
+    const tokenGenerator = makeTokenGenerator()
     const suts = [].concat(
       new AuthUseCase(),
+      new AuthUseCase({}),
       new AuthUseCase({
-        loadUserByEmailRepository: null,
-        encrypter: null,
-        tokenGenerator: null
+        loadUserByEmailRepository: invalid
       }),
       new AuthUseCase({
-        loadUserByEmailRepository: invalid,
-        encrypter: null,
-        tokenGenerator: null
-      }),
-      new AuthUseCase({
-        loadUserByEmailRepository,
-        encrypter: null,
-        tokenGenerator: null
+        loadUserByEmailRepository
+
       }),
       new AuthUseCase({
         loadUserByEmailRepository,
-        encrypter: invalid,
-        tokenGenerator: null
+        encrypter: invalid
+
       }),
       new AuthUseCase({
         loadUserByEmailRepository,
-        encrypter,
-        tokenGenerator: null
+        encrypter
       }),
       new AuthUseCase({
         loadUserByEmailRepository,
         encrypter,
         tokenGenerator: invalid
+      }),
+      new AuthUseCase({
+        loadUserByEmailRepository,
+        encrypter,
+        tokenGenerator
+      }),
+      new AuthUseCase({
+        loadUserByEmailRepository,
+        encrypter,
+        tokenGenerator,
+        updateAccessTokenRepository: invalid
       })
     )
     for (const sut of suts) {
@@ -181,9 +214,10 @@ describe('Auth UseCase', () => {
     }
   })
 
-  test('should throw if any dependency throw', async () => {
+  test('should throw if any dependency throws', async () => {
     const loadUserByEmailRepository = makeLoadUserByEmailRepository()
     const encrypter = makeEncrypter()
+    const tokenGenerator = makeTokenGenerator()
     const suts = [].concat(
       new AuthUseCase({
         loadUserByEmailRepository: makeLoadUserByEmailRepositoryWithError()
@@ -196,6 +230,12 @@ describe('Auth UseCase', () => {
         loadUserByEmailRepository,
         encrypter,
         tokenGenerator: makeTokenGeneratorWithError()
+      }),
+      new AuthUseCase({
+        loadUserByEmailRepository,
+        encrypter,
+        tokenGenerator,
+        updateAccessTokenRepository: makeUpdateAccessTokenRepositoryWithError()
       })
     )
     for (const sut of suts) {
